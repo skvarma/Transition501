@@ -47,7 +47,7 @@ FROM foo__c
 
 #### Chatter objects
 [Awesome Chatter Documentation](https://developer.salesforce.com/page/An_Introduction_to_Salesforce_Chatter)
-https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/RelationshipsOfChatterObjects.htm
+[Chatter data Model](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/RelationshipsOfChatterObjects.htm) 
 
 
   - A feed item is an entry in the feed, such as a change to a record that's being followed, an updated post, or a user status change.
