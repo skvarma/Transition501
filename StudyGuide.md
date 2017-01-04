@@ -21,7 +21,7 @@ Reasons to implement Apex Sharing
   - A record can be shared multiple times with a user or group using different Apex sharing reasons.
 
 Sample Use Case
-  - "Automatically share a record to a User based on a User-lookup field."
+  - Automatically share a record to a User based on a User-lookup field.
     e.g. Share a record based on a user lookup that is on the object.
 
 
@@ -30,9 +30,31 @@ The naming convention for these objects is:
 __[standardObjectName]History e.g. AccountHistory, ContactHistory__
 __[customObjectName]__History e.g. Car__History, Brand__History__
 
+```
+SELECT OldValue, NewValue, Parent.Id, Parent.name, Parent.customfield__c
+FROM foo__history
+
+SELECT Name, customfield__c, (SELECT OldValue, NewValue FROM foo__history)
+FROM foo__c
+```
+
+
 #### Metadata objects
+[EMPTY]
+
 #### multi-currency
+[EMPTY]
+
 #### Chatter objects
+[Awesome Chatter Documentation](https://developer.salesforce.com/page/An_Introduction_to_Salesforce_Chatter)
+https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/RelationshipsOfChatterObjects.htm
+
+
+  - A feed item is an entry in the feed, such as a change to a record that's being followed, an updated post, or a user status change.
+  - All feed items have a ParentId, which is either:
+    - a record
+    - a user
+    - a group  
 
 
 
