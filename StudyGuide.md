@@ -58,13 +58,123 @@ FROM foo__c
     - a group  
 
 
+### Topic#2 - Describe the different capabilities of and use cases for the various Salesforce development platforms (Heroku, Fuel, Force.com).
+
+####Heroku - PaaS - https://trailhead.salesforce.com/heroku_enterprise_baiscs/hello_heroku
+####Fuel - Marketing Cloud platform - https://www.marketingcloud.com/uk/products/platform/fuel-platform/
+#### Foce.com
+
+### Topic#3 - Describe how to design code that accommodates multi-language, multi-currency, multi-locale considerations
+
+#### multi-language -
+```
+Translation Workbench - http://amitsalesforce.blogspot.ca/2015/01/translation-workbench-salesforce.html
+If you want to use the translation workbench, you need to enable it. Enabling the workbench makes some changes to your Salesforce.com  organization:
+  - Picklist values must be edited individually. This means you can’t mass edit picklist values, though you can still mass add new values.
+  - When picklist values are sorted alphabetically, the values are alphabetical by the organization's default language.
+  - Reports have a language drop down on the filter criteria page when any filter criteria uses the "starts with", "contains" or "does not contain" operators.
+  - Import files have a language drop down and all records and values within the import file must be in that language.
+  - Web-to-Lead and Web-to-Case have a language drop down before you generate the HTML.
+  - All rules and setup data must be entered in the organization's default language - Global administrators must work together in the organization's default language.
+```
+```
+The language used to display labels that have associated translations in Salesforce. This value overrides the language of the user viewing the page.
+<apex page language="en">
+<apex page language="en-US">
+```
+
+
+#### multi-currency
+* [Manage Multiple Currencies](https://help.salesforce.com/articleView?id=admin_currency.htm&type=0&language=en_US&release=206.6)
+* [Implications of Enabling Multi Currency](https://help.salesforce.com/articleView?id=admin_enable_multicurrency_implications.htm&type=0)
+* [Enable Multiple Currencies](https://help.salesforce.com/articleView?id=admin_enable_multicurrency.htm&language=en_US&type=0)
+* [About Advanced Currency Management](https://help.salesforce.com/articleView?id=administration_about_advanced_currency_management.htm&type=0&language=en_US)
+* [Querying Currency Fields in Multi-Currency Orgs](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_querying_currency_fields.htm)
+* [CurrencyType](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_currencytype.htm)
+* [DatedConversionRate](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_datedconversionrate.htm?search_text=currency)
+
+#### multi-locale
+* [Select Your Language, Locale, and Currency](https://help.salesforce.com/articleView?id=admin_language_locale_currency.htm&language=zh_CN_3&type=0)
+  The Salesforce locale settings determine the display formats for date and time, users’ names, addresses, and commas and periods in numbers. For single-currency organizations, locales also set the default currency for the organization when you select them in the Currency Locale picklist on the Company Information page.
+
+### Tpoic 4 - Describe the implications of compound data types in Apex programming.
+* [Compound Field Considerations and Limitations](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/compound_fields_limitations.htm)
+* Compound fields group together multiple elements of primitive data types, such as numbers or strings, to represent complex data types, such as a location or an address. Compound fields are accessible as a single, structured field, or as individual component fields.
+
+* Address - Address, a structured data type that combines the following fields.
+  - Accuracy,City,Country,CountryCode,Latitude,Longitude,PostalCode,State,StateCode,Street
+
+    ```
+    SELECT Name, *MailingAddress* FROM Contact *OR*
+
+    SELECT Name, BillingStreet, BillingCity, BillingState, BillingPostalCode,BillingCountry, BillingLatitude, BillingLongitude
+      FROM Account
+
+    //Access the compound address field *MailingAddress*
+    Address addr = (Address) con.getMailingAddress();
+    String streetAddr = "";
+    if (null != addr) streetAddr = *addr.getStreet()*;
+    ```
+
+- Compound address fields include latitude and longitude fields.
+
+    ```
+    SELECT Id, Name, BillingAddress
+    FROM Account
+    WHERE DISTANCE(BillingAddress, GEOLOCATION(37.775,-122.418), 'mi') < 20
+    ORDER BY DISTANCE(BillingAddress, GEOLOCATION(37.775,-122.418), 'mi')
+    LIMIT 10
+    ```
+
+* Geolocation fields are accessible in the SOAP and REST APIs as a Location—a structured compound data type—or as individual latitude and longitude elements.
+  - SELECT clauses can reference geolocations directly, instead of the individual component fields.
+  ```
+  SELECT location__c FROM Warehouse__c
+  ```
+
+* Compound Field Considerations and Limitations
+  - Read Only
+  - Only accessible by SOAP & REST APIs
+  - Can be queried with the Location and Address Apex classes but they’re editable only as components of the actual field
+    ```
+    /*
+     *  Read and set geolocation field components by appending “__latitude__s”
+     *  or “__longitude__s” to the field name, instead of the usual “__c.”
+     */
+    Double theLatitude = myObject__c.aLocation__latitude__s;
+    myObject__c.aLocation__longitude__s = theLongitude;
+    ```
+  - You can’t use compound fields in
+      - *Visualforce* —for example, in an <apex:outputField>. To access or update field values, use the individual field components.
+      - Data Loader
+      - Custom geolocation and location fields on standard addresses aren’t supported with email templates.
+      - You can’t use compound fields in lookup filters, except to filter distances that are within or not within given ranges
+      - The only formula functions that you can use with compound fields are ISBLANK, ISCHANGED, and ISNULL
+  - Address fields can’t be used in WHERE statements in SOQL. Address fields aren’t filterable, but the isFilterable() method of the DescribeFieldResult Apex class erroneously returns true for address fields.
+  - Geolocation fields are supported in SOQL with the following limitations.
+    - DISTANCE and GEOLOCATION are supported in WHERE and ORDER BY clauses in SOQL, but not in GROUP BY. DISTANCE is supported in SELECT clauses.
+    - DISTANCE supports only the logical operators > and <, returning values within (<) or beyond (>) a specified radius.
+    - When using the GEOLOCATION function in SOQL queries, the geolocation field must precede the latitude and longitude coordinates. For example,
+    ```
+    DISTANCE(warehouse_location__c, GEOLOCATION(37.775,-122.418), 'km') works
+    but
+    DISTANCE (GEOLOCATION(37.775,-122.418), warehouse_location__c, 'km') doesn’t work.
+    ```
+    - Apex bind variables aren’t supported for the units parameter in DISTANCE or GEOLOCATION functions. This query doesn’t work.
+    ```
+    String units = 'mi';
+    List<Account> accountList =
+    [SELECT ID, Name, BillingLatitude, BillingLongitude
+     FROM Account
+     WHERE DISTANCE(My_Location_Field__c, GEOLOCATION(10,10), :units) < 10];
+    ```
 
 
 
 
 
-Describe the different capabilities of and use cases for the various Salesforce development platforms (Heroku, Fuel, Force.com).
-Describe how to design code that accommodates multi-language, multi-currency, multi-locale considerations.
+
+
 Describe the implications of compound data types in Apex programming.
 Describe the interactions between Visualforce/Apex with Flow/Lightning Process Builder.
 Given a scenario, describe when and how to use Apex managed sharing. Describe the use cases for the various authentication techniques.
@@ -81,3 +191,25 @@ Using Webservice keyword and considerations
 Querying based on the Currency field
 How to register certificates
 Apex Managed Sharing considerations
+
+
+Compound fields – Learn the different types of compound fields and understand the considerations and limitations. Pay atention to DISTANCE and GEOLOCATION formulas.
+Advanced Currency Management – review this topic and also pay attention to how you would approach this in SOQL or SOSL.
+How would you manage exchange rates when multi-currency is enabled?
+Understand Continuation Calls and why they are needed.
+Review best practices for test classes and why the new @testsetup annotation is used. Understand its considerations.
+Review how to query for permission sets in SOQL. Pay close attention to the various aspects of this namely the relationship between the user and permission set and the user licence.
+Understand the @invocablemethod annotation and how it differs from Process.plugin and the @invocablevariable annotation.
+Understand the basics of lightning components. Best to skim through the Lightning components developer guide and understand the first few chapters.
+Pay attention to how you would mock classes for http callouts v/s web service callouts?
+Review the web service class and understand what kind of arguments it can accept and return.
+Visualforce best practices
+APEX best practices
+Order of Execution
+Understand how to use the developer console and its components. How can you debug your code using this? (Spend some time on this. I missed some questions on this and they are easy to get!!!!)
+Apex charts – Pay attention to the various options and attributes.
+Efficient ways of querying parent-child object SOQL or performing parent-child object DML.
+Rollup summary considerations.
+Know when to pick the best automation tool for a given scenario.
+Review the VF apex:action… tags and understand their usage.
+Finally skim through the apex and vf developer guides. Note: I was not able to do this in detail due to lack of time but if you have time then go for it.
