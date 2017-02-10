@@ -169,21 +169,172 @@ The language used to display labels that have associated translations in Salesfo
      WHERE DISTANCE(My_Location_Field__c, GEOLOCATION(10,10), :units) < 10];
     ```
 
+### Topic 5 - Describe the interactions between Visualforce/Apex with Flow/Lightning Process Builder.
+* [InvocableMethod Annotation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm)
+  ```
+  public class AccountInsertAction {
+    @InvocableMethod(label='Insert Accounts' description='Inserts the accounts specified and returns the IDs of the new accounts.')
+    public static List<ID> insertAccounts(List<Account> accounts) {
+      Database.SaveResult[] results = Database.insert(accounts);
+      List<ID> accountIds = new List<ID>();
+      for (Database.SaveResult result : results) {
+        if (result.isSuccess()) {
+          accountIds.add(result.getId());
+        }
+      }
+      return accountIds;
+    }
+  }
+  ```
+* [InvocableVariable Annotation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm)
+
+
+* [Visual Workflow in Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_forcecom_visualworkflow.htm)
+
+* [Render Flows with Visualforce](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_flows_intro.htm)
+  ```
+  <apex:page standardController="Case" tabStyle="Case" >
+      <flow:interview name="ModemTroubleShooting">
+          <apex:param name="vaCaseNumber" value="{!Case.CaseNumber}"/>
+      </flow:interview>
+  </apex:page>  
+  ```
+
+  ```
+  public class MyCustomController {
+    public Account apexVar {get; set;}
+
+    public MyCustomController() {
+        apexVar = [
+            SELECT Id, Name FROM Account
+            WHERE Name = ‘Acme’ LIMIT 1];
+    }
+  }
+
+  <apex:page controller="MyCustomController">
+    <flow:interview name="flowname">
+        <apex:param name="myVariable" value="{!apexVar}"/>
+    </flow:interview>
+  </apex:page>
+  ```
+
+  ```
+  public class MyCustomController {
+    public Account[] myAccount {
+        get {
+            return [
+                SELECT Id, Name FROM account
+                WHERE Name = 'Acme'
+                ORDER BY Id
+            ] ;
+        }
+        set {
+            myAccount = value;
+        }
+    }
+    public MyCustomController () {
+    }
+  }
+
+  <apex:page id="p" controller="MyCustomController">
+    <flow:interview id="i" name="flowname">
+        <apex:param name="accountColl" value="{!myAccount}"/>
+    </flow:interview>
+  </apex:page>
+  ```
+
+  ```
+  public class MyCustomController {
+    public Flow.Interview.flowname MyInterview { get; set; }
+
+    public MyCustomController() {
+        String[] value1 = new String[]{'First', 'Second'};
+        Double[] value2 = new Double[]{999.123456789, 666.123456789};
+        Map<String, Object> myMap = new Map<String, Object>();
+        myMap.put('stringCollVar', value1);
+        myMap.put('numberCollVar', value2);
+        MyInterview = new Flow.Interview.flowname(myMap);
+    }
+  }
+
+  <apex:page controller="MyCustomController">
+    <flow:interview name="flowname" interview="{!MyInterview}" />
+  </apex:page>
+  ```
+
+### Topic 6 - Given a scenario, describe when and how to use Apex managed sharing
+
+* [Understanding Apex Managed Sharing](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing.htm)
+
+
+### Topic 7 - Describe the use cases for the various authentication techniques
+
+* [Understanding Authentication - oAuth](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_authentication.htm)
+
+* [SOAP API Login](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_login.htm)
+
+* [How to Implement Single Sign-On with Force.com](https://developer.salesforce.com/page/How_to_Implement_Single_Sign-On_with_Force.com)
+
+* [Single Sign-On with SAML on Force.com](https://developer.salesforce.com/page/Single_Sign-On_with_SAML_on_Force.com)
+
+* [The Elements of User Authentication](https://help.salesforce.com/articleView?id=security_overview_user.htm&language=en_US&type=0)
+
+
+### Topic 8 - Given a set of requirements, describe the process for designing Lightning components.
+
+* [Getting started with Lightning components](https://trailhead.salesforce.com/lex_dev/lex_dev_lc_basics/lex_dev_lc_basics_intro)
+* [Handle Actions with controllers](https://trailhead.salesforce.com/lex_dev_lc_basics/lex_dev_lc_basics_controllers)
+
+### Topic XXX - Using Developer Console to debug an app (especially checkpoints)
+
+* [Developer Console Basics](https://trailhead.salesforce.com/en/modules/developer_console)
+
+
+
+### How to register certificates
+
+
+### Topic XXX - Querying the PermissionSet
+* [Using SOQL to Determine Your Force.com User’s Permissions](https://developer.salesforce.com/blogs/engineering/2012/06/using-soql-to-determine-your-users-permissions-2.html)
+* PermissionSet Objects
+  - PermissionSet  (Object that defines the PermissionSet, has a boolean flag *IsOwnedByProfile*)
+  - ObjectPermissions (Master Detail with Permission Set. Stoes Object permission for each permission set)
+  - PermissionSetAssignment (Junction obj b/w PermissionSet & User)
+
+```
+  SELECT Id,IsOwnedByProfile,Label
+  FROM PermissionSet
+```
+
+```
+  // which users have Read on Accounts and why
+  SELECT Assignee.Name, PermissionSet.Id, PermissionSet.isOwnedByProfile, PermissionSet.Profile.Name, PermissionSet.Label
+    FROM PermissionSetAssignment
+    WHERE PermissionSetId
+      IN (SELECT ParentId
+          FROM ObjectPermissions
+          WHERE SObjectType = 'Account' AND
+          PermissionsRead = true)
+```
+```
+  // Why a specific user has read access to account
+  Select ID, PermissionSet.Name, PermissionSet.Label, PermissionSet.IsOwnedByProfile, PermissionSet.Profile.name
+  from PermissionSetAssignment
+  Where Assignee.Name = 'User Name'
+  and PermissionSetId in (Select ParentId from ObjectPermissions Where SobjectType = 'Account' and PermissionsRead = true)
+```
 
 
 
 
 
 
-Describe the implications of compound data types in Apex programming.
-Describe the interactions between Visualforce/Apex with Flow/Lightning Process Builder.
-Given a scenario, describe when and how to use Apex managed sharing. Describe the use cases for the various authentication techniques.
-Given a set of requirements, describe the process for designing Lightning components.
 Describe the common performance issues for user interfaces and the techniques to mitigate them.
 Describe how to expose Apex classes as SOAP and REST web services.
 Describe how to use system classes to integrate with SOAP- or REST-based web services.
 Describe when and how to use metadata, streaming, and Analytics API to enhance Apex and Visualforce solutions.
 Given a scenario, identify the appropriate tool to analyze application performance profiles and troubleshoot data and performance issues.
+
 @InvocableMethod and @InvocableVariable versus ProcessPlugin interface
 Querying the PermissionSet
 Using Developer Console to debug an app (especially checkpoints)
