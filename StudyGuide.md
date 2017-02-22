@@ -288,7 +288,7 @@ The language used to display labels that have associated translations in Salesfo
 ### Topic XXX - Using Developer Console to debug an app (especially checkpoints)
 
 * [Developer Console Basics](https://trailhead.salesforce.com/en/modules/developer_console)
-
+* Using Developer Console to debug an app (especially checkpoints)
 
 
 ### How to register certificates
@@ -296,7 +296,7 @@ The language used to display labels that have associated translations in Salesfo
 
 ### Topic XXX - Querying the PermissionSet
 * [Using SOQL to Determine Your Force.com User’s Permissions](https://developer.salesforce.com/blogs/engineering/2012/06/using-soql-to-determine-your-users-permissions-2.html)
-* PermissionSet Objects
+* PermissionSet Objects (Querying the PermissionSet)
   - PermissionSet  (Object that defines the PermissionSet, has a boolean flag *IsOwnedByProfile*)
   - ObjectPermissions (Master Detail with Permission Set. Stoes Object permission for each permission set)
   - PermissionSetAssignment (Junction obj b/w PermissionSet & User)
@@ -324,24 +324,44 @@ The language used to display labels that have associated translations in Salesfo
   and PermissionSetId in (Select ParentId from ObjectPermissions Where SobjectType = 'Account' and PermissionsRead = true)
 ```
 
+### Salesforce APIs
+* [Get to Know the Salesforce APIs - Answers - Which API Do I Use?](https://trailhead.salesforce.com/trails/force_com_dev_intermediate/modules/api_basics/units/api_basics_overview)
+
+* [Apex Integration Overview] (https://trailhead.salesforce.com/modules/apex_integration_services/units/apex_integration_callouts)
+
+* Describe how to expose Apex classes as SOAP and REST web services.
+
+* Describe how to use system classes to integrate with SOAP- or REST-based web services.
+
+* Pay attention to how you would mock classes for http callouts v/s web service callouts?
+
+* Review the web service class and understand what kind of arguments it can accept and return.
+
+* Describe when and how to use metadata, streaming, and Analytics API to enhance Apex and Visualforce solutions.
+
+I think SOAP and REST are the biggest topics on the exam. You should read the entire portion of the Apex Developer Guide related to these
+
+
+### Describe the common performance issues for user interfaces and the techniques to mitigate them
+
+* [Best Practices for Improving Visualforce Performance] (https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_best_practices_performance.htm)
+
+
+
+### Misc Questions
 
 
 
 
 
-Describe the common performance issues for user interfaces and the techniques to mitigate them.
-Describe how to expose Apex classes as SOAP and REST web services.
-Describe how to use system classes to integrate with SOAP- or REST-based web services.
-Describe when and how to use metadata, streaming, and Analytics API to enhance Apex and Visualforce solutions.
 Given a scenario, identify the appropriate tool to analyze application performance profiles and troubleshoot data and performance issues.
 
 @InvocableMethod and @InvocableVariable versus ProcessPlugin interface
-Querying the PermissionSet
-Using Developer Console to debug an app (especially checkpoints)
+
+
 Using Webservice keyword and considerations
 Querying based on the Currency field
 How to register certificates
-Apex Managed Sharing considerations
 
 
 Compound fields – Learn the different types of compound fields and understand the considerations and limitations. Pay atention to DISTANCE and GEOLOCATION formulas.
@@ -352,8 +372,7 @@ Review best practices for test classes and why the new @testsetup annotation is 
 Review how to query for permission sets in SOQL. Pay close attention to the various aspects of this namely the relationship between the user and permission set and the user licence.
 Understand the @invocablemethod annotation and how it differs from Process.plugin and the @invocablevariable annotation.
 Understand the basics of lightning components. Best to skim through the Lightning components developer guide and understand the first few chapters.
-Pay attention to how you would mock classes for http callouts v/s web service callouts?
-Review the web service class and understand what kind of arguments it can accept and return.
+
 Visualforce best practices
 APEX best practices
 Order of Execution
@@ -364,3 +383,20 @@ Rollup summary considerations.
 Know when to pick the best automation tool for a given scenario.
 Review the VF apex:action… tags and understand their usage.
 Finally skim through the apex and vf developer guides. Note: I was not able to do this in detail due to lack of time but if you have time then go for it.
+
+
+Read up on the Messaging class and it’s method
+Implementing Continuation and when best to use it
+Your SOQL and SOSL queries
+Know your objects and data types. What are types of compound fields and how to use them in queries
+Testing REST and SOAP
+Http callouts and named credentials
+Advanced Currency Management
+When to use declarative vs programmatic features
+@invocablemethod and @invocablevariable annotations
+Lightning components
+Testing best practices
+Developer Console
+Apex Charts
+Developer Console
+Visualforce best practices
